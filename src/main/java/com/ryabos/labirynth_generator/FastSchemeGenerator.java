@@ -1,7 +1,9 @@
 package com.ryabos.labirynth_generator;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 public final class FastSchemeGenerator implements SchemeGenerator {
     private static final Random RANDOM                  = new Random();
@@ -34,7 +36,14 @@ public final class FastSchemeGenerator implements SchemeGenerator {
         lines = new Line[amount * 2];
         generateFrame();
         generateRandomUnions();
-        return Arrays.stream(lines).filter(Objects::nonNull).collect(Collectors.toList());
+        List<Line> zxc = new ArrayList<>(linesCount);
+        for (int j = 0; j < lines.length; j++) {
+                Line line = lines[j];
+            if (line != null) {
+                zxc.add(line);
+            }
+        }
+        return zxc;
     }
 
     private void generateFrame() {
