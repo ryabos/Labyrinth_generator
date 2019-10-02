@@ -1,19 +1,21 @@
 package com.ryabos.labirynth_generator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class FastSchemeGenerator implements SchemeGenerator {
-    private static final Random     RANDOM                  = new Random();
-    private final        int        xAmount;
-    private final        int        yAmount;
-    private final        int        xMax;
-    private final        int        yMax;
-    private final        int        amount;
-    private final        int[]      roots;
-    private              List<Line> lines;
-    private              int        groupCount;
-    private              int        connectedWithFrameCount = 0;
-    private              int[]      connectedWithFrame;
+    private static final Random RANDOM                  = new Random();
+    private final        int    xAmount;
+    private final        int    yAmount;
+    private final        int    xMax;
+    private final        int    yMax;
+    private final        int    amount;
+    private final        int[]  roots;
+    private              Line[] lines;
+    private              int    groupCount;
+    private              int    linesCount              = 0;
+    private              int    connectedWithFrameCount = 0;
+    private              int[]  connectedWithFrame;
 
     public FastSchemeGenerator(int xAmount, int yAmount) {
         this.xAmount = xAmount;
@@ -29,10 +31,10 @@ public final class FastSchemeGenerator implements SchemeGenerator {
 
     @Override
     public Collection<Line> generate() {
-        lines = new ArrayList<>();
+        lines = new Line[amount * 2];
         generateFrame();
         generateRandomUnions();
-        return lines;
+        return Arrays.stream(lines).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private void generateFrame() {
@@ -57,7 +59,7 @@ public final class FastSchemeGenerator implements SchemeGenerator {
     }
 
     private void addLine(int x1, int y1, int x2, int y2) {
-        lines.add(new Line(x1, y1, x2, y2));
+        lines[linesCount++] = new Line(x1, y1, x2, y2);
     }
 
     private void generateRandomUnions() {
