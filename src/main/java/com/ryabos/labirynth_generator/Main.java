@@ -2,31 +2,30 @@ package com.ryabos.labirynth_generator;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.concurrent.Executors;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class Main extends Application {
     private static final int PADDING = 4;
-    private static final int STEP = 8;
-    private static final double LINE_WIDTH = 1;
-    private int xAmount = 20;
-    private int yAmount = 10;
-    private int width = STEP * xAmount;
-    private int height = STEP * yAmount;
-    private Canvas canvas = new Canvas(width + PADDING * 2, height + PADDING * 2);
-    private final GraphicsContext gc = canvas.getGraphicsContext2D();
+    private final Spinner<Integer> widthField = createSpinner(3, 10000, 20);
+    private final Spinner<Integer> heightField = createSpinner(3, 10000, 10);
+    private final Spinner<Integer> stepField = createSpinner(2, 200, 8);
+    private Canvas canvas = new Canvas();
 
     public static void main(String[] args) {
         launch(args);
@@ -34,30 +33,61 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        gc.setFill(Color.BLANCHEDALMOND);
-        gc.setLineWidth(LINE_WIDTH);
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(this::drawLabirynth, 0, 1, MILLISECONDS);
-        show(primaryStage);
+        Button refreshButton = new Button("Нарисовать лабиринт");
+        refreshButton.setOnAction(event -> drawLabyrinth());
+        drawLabyrinth();
+        VBox root = new VBox(PADDING,
+                new HBox(PADDING,
+                        refreshButton,
+                        new Label("Ширина"), widthField,
+                        new Label("Высота"), heightField,
+                        new Label("Шаг"), stepField),
+                createScrollPane(canvas));
+        root.setPadding(new Insets(4));
+        final Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
-    private void drawLabirynth() {
+    private void drawLabyrinth() {
+        drawLabyrinth(stepField.getValue(), widthField.getValue(), heightField.getValue());
+    }
+
+    private ScrollPane createScrollPane(Node content) {
+        ScrollPane scrollPane = new ScrollPane(content);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+        scrollPane.setPannable(true);
+        return scrollPane;
+    }
+
+    private Spinner<Integer> createSpinner(int min, int max, int initial) {
+        Spinner<Integer> spinner = new Spinner<>(min, max, initial);
+        spinner.setEditable(true);
+        spinner.setOnScroll(event -> {
+            if (event.getDeltaY() > 0) {
+                spinner.increment();
+            } else {
+                spinner.decrement();
+            }
+        });
+        return spinner;
+    }
+
+    private void drawLabyrinth(int step, int xAmount, int yAmount) {
+        canvas.setWidth(stepField.getValue() * widthField.getValue() + PADDING * 2);
+        canvas.setHeight(stepField.getValue() * heightField.getValue() + PADDING * 2);
         final Instant now = Instant.now();
         final Collection<SchemeGenerator.Line> generate = new FastSchemeGenerator(xAmount, yAmount).generate();
         System.out.println(xAmount + "/" + yAmount + " scheme was generated in " + Duration.between(now, Instant.now()).toMillis() + " ms");
         Platform.runLater(() -> {
-            gc.clearRect(0, 0, width + PADDING * 2, height + PADDING * 2);
+            canvas.getGraphicsContext2D().clearRect(0, 0, step * xAmount + PADDING * 2, step * yAmount + PADDING * 2);
             for (SchemeGenerator.Line line : generate) {
-                gc.strokeLine(line.x1 * STEP + STEP,
-                        line.y1 * STEP + STEP,
-                        line.x2 * STEP + STEP,
-                        line.y2 * STEP + STEP);
+                canvas.getGraphicsContext2D().strokeLine(line.x1 * step + step,
+                        line.y1 * step + step,
+                        line.x2 * step + step,
+                        line.y2 * step + step);
             }
         });
     }
 
-    private void show(Stage primaryStage) {
-        final Scene scene = new Scene(new Group(canvas));
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
 }
