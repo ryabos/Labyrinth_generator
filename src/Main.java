@@ -87,9 +87,9 @@ public class Main extends Application {
     private void union(int p, int q) {
         if (connected(p, q)) { return; }
         final int x1 = (p % xAmount) * STEP;
-        final int y1 = (p / yAmount) * STEP;
+        final int y1 = (p / xAmount) * STEP;
         final int x2 = (q % xAmount) * STEP;
-        final int y2 = (q / yAmount) * STEP;
+        final int y2 = (q / xAmount) * STEP;
         gc.setLineWidth(LINE_WIDTH);
         strokeLine(x1, y1, x2, y2);
 
