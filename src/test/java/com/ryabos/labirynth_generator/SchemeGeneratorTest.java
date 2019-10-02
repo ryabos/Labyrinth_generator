@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SimpleSchemeGeneratorTest {
+class SchemeGeneratorTest {
     private final int xAmount = 20;
     private final int yAmount = 10;
     private final int xMax = xAmount - 1;
@@ -17,7 +17,7 @@ class SimpleSchemeGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        SchemeGenerator generator = new SimpleSchemeGenerator(xAmount, yAmount);
+        SchemeGenerator generator = new FastSchemeGenerator(xAmount, yAmount);
         lines = generator.generate();
     }
 

@@ -9,6 +9,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
 import java.util.concurrent.Executors;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -33,19 +36,23 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         gc.setFill(Color.BLANCHEDALMOND);
         gc.setLineWidth(LINE_WIDTH);
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(this::drawLabirynth, 0, 500, MILLISECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(this::drawLabirynth, 0, 1, MILLISECONDS);
         show(primaryStage);
     }
 
     private void drawLabirynth() {
-        Platform.runLater(() -> gc.clearRect(0, 0, width + PADDING * 2, height + PADDING * 2));
-        for (SchemeGenerator.Line line : new SimpleSchemeGenerator(xAmount, yAmount).generate()) {
-            Platform.runLater(() ->
-                    gc.strokeLine(line.x1 * STEP + STEP,
-                            line.y1 * STEP + STEP,
-                            line.x2 * STEP + STEP,
-                            line.y2 * STEP + STEP));
-        }
+        final Instant now = Instant.now();
+        final Collection<SchemeGenerator.Line> generate = new FastSchemeGenerator(xAmount, yAmount).generate();
+        System.out.println(xAmount + "/" + yAmount + " scheme was generated in " + Duration.between(now, Instant.now()).toMillis() + " ms");
+        Platform.runLater(() -> {
+            gc.clearRect(0, 0, width + PADDING * 2, height + PADDING * 2);
+            for (SchemeGenerator.Line line : generate) {
+                gc.strokeLine(line.x1 * STEP + STEP,
+                        line.y1 * STEP + STEP,
+                        line.x2 * STEP + STEP,
+                        line.y2 * STEP + STEP);
+            }
+        });
     }
 
     private void show(Stage primaryStage) {
