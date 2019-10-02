@@ -22,8 +22,8 @@ import java.util.Collection;
 
 public class Main extends Application {
     private static final int PADDING = 4;
-    private final Spinner<Integer> widthField = createSpinner(3, 10000, 20);
-    private final Spinner<Integer> heightField = createSpinner(3, 10000, 10);
+    private final Spinner<Integer> widthField = createSpinner(3, 10000, 400);
+    private final Spinner<Integer> heightField = createSpinner(3, 10000, 400);
     private final Spinner<Integer> stepField = createSpinner(2, 200, 8);
     private Canvas canvas = new Canvas();
 

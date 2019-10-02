@@ -1,18 +1,19 @@
 package com.ryabos.labirynth_generator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
+import java.util.*;
 
 public final class FastSchemeGenerator implements SchemeGenerator {
-    private final int xAmount;
-    private final int yAmount;
-    private final int xMax;
-    private final int yMax;
-    private final int amount;
-    private int[] roots;
-    private ArrayList<Line> lines;
-    private int groupCount;
+    private static final Random     RANDOM                  = new Random();
+    private final        int        xAmount;
+    private final        int        yAmount;
+    private final        int        xMax;
+    private final        int        yMax;
+    private final        int        amount;
+    private final        int[]      roots;
+    private              List<Line> lines;
+    private              int        groupCount;
+    private              int        connectedWithFrameCount = 0;
+    private              int[]      connectedWithFrame;
 
     public FastSchemeGenerator(int xAmount, int yAmount) {
         this.xAmount = xAmount;
@@ -22,6 +23,7 @@ public final class FastSchemeGenerator implements SchemeGenerator {
         amount = this.xAmount * this.yAmount;
         groupCount = amount;
         roots = new int[amount];
+        connectedWithFrame = new int[amount];
         for (int i = 0; i < amount; i++) { roots[i] = i; }
     }
 
@@ -59,13 +61,9 @@ public final class FastSchemeGenerator implements SchemeGenerator {
     }
 
     private void generateRandomUnions() {
-        final Random random = new Random();
         while (groupCount > 2) {
-            final int p = random.nextInt(amount);
-            if (p % xAmount == 0 || p % xAmount == xAmount - 1) { continue; }
-            if (connected(0, p) || connected(p, amount - 1)) {
-                union(p, random.nextBoolean(), random.nextBoolean());
-            }
+            final int p = connectedWithFrame[RANDOM.nextInt(connectedWithFrameCount)];
+            union(p, RANDOM.nextBoolean(), RANDOM.nextBoolean());
         }
     }
 
@@ -112,6 +110,9 @@ public final class FastSchemeGenerator implements SchemeGenerator {
 
     private void union(int p, int q) {
         if (connected(p, q)) { return; }
+        if (!(q % xAmount == 0 || q % xAmount == xAmount - 1)) {
+            connectedWithFrame[connectedWithFrameCount++] = q;
+        }
         final int x1 = (p % xAmount);
         final int y1 = (p / xAmount);
         final int x2 = (q % xAmount);
