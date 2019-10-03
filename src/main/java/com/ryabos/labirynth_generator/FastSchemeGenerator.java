@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Random;
 
 public final class FastSchemeGenerator implements SchemeGenerator {
-    private static final Random RANDOM                  = new Random();
-    private final        int    xAmount;
-    private final        int    yAmount;
-    private final        int    xMax;
-    private final        int    yMax;
-    private final        int    amount;
-    private final        int[]  roots;
-    private              Line[] lines;
-    private              int    groupCount;
-    private              int    linesCount              = 0;
-    private              int    connectedWithFrameCount = 0;
-    private              int[]  connectedWithFrame;
+    private static final Random RANDOM = new Random();
+    private final int xAmount;
+    private final int yAmount;
+    private final int xMax;
+    private final int yMax;
+    private final int amount;
+    private final int[] roots;
+    private Line[] lines;
+    private int groupCount;
+    private int linesCount = 0;
+    private int connectedWithFrameCount = 0;
+    private int[] connectedWithFrame;
 
     public FastSchemeGenerator(int xAmount, int yAmount) {
         this.xAmount = xAmount;
@@ -31,6 +31,7 @@ public final class FastSchemeGenerator implements SchemeGenerator {
         for (int i = 0; i < amount; i++) { roots[i] = i; }
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     public Collection<Line> generate() {
         lines = new Line[amount * 2];
@@ -38,7 +39,7 @@ public final class FastSchemeGenerator implements SchemeGenerator {
         generateRandomUnions();
         List<Line> zxc = new ArrayList<>(linesCount);
         for (int j = 0; j < lines.length; j++) {
-                Line line = lines[j];
+            Line line = lines[j];
             if (line != null) {
                 zxc.add(line);
             }

@@ -78,14 +78,17 @@ public class Main extends Application {
         canvas.setHeight(stepField.getValue() * heightField.getValue() + PADDING * 2);
         final Instant now = Instant.now();
         final Collection<SchemeGenerator.Line> generate = new FastSchemeGenerator(xAmount, yAmount).generate();
-        System.out.println(xAmount + "/" + yAmount + " scheme was generated in " + Duration.between(now, Instant.now()).toMillis() + " ms");
+        System.out.println(xAmount + "/" + yAmount + " scheme was generated in " + Duration.between(now, Instant.now())
+                                                                                           .toMillis() + " ms");
         Platform.runLater(() -> {
-            canvas.getGraphicsContext2D().clearRect(0, 0, step * xAmount + PADDING * 2, step * yAmount + PADDING * 2);
+            canvas.getGraphicsContext2D()
+                  .clearRect(0, 0, step * xAmount + PADDING * 2, step * yAmount + PADDING * 2);
             for (SchemeGenerator.Line line : generate) {
-                canvas.getGraphicsContext2D().strokeLine(line.x1 * step + step,
-                        line.y1 * step + step,
-                        line.x2 * step + step,
-                        line.y2 * step + step);
+                canvas.getGraphicsContext2D()
+                      .strokeLine(line.x1 * step + step,
+                              line.y1 * step + step,
+                              line.x2 * step + step,
+                              line.y2 * step + step);
             }
         });
     }

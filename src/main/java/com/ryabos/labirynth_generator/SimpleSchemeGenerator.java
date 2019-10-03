@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.Random;
 
 public final class SimpleSchemeGenerator implements SchemeGenerator {
-    private int[] ids;
     private final int xAmount;
     private final int yAmount;
     private final int xMax;
     private final int yMax;
-    private ArrayList<Line> lines;
     private final int amount;
+    private int[] ids;
+    private ArrayList<Line> lines;
     private int groupCount;
 
     public SimpleSchemeGenerator(int xAmount, int yAmount) {

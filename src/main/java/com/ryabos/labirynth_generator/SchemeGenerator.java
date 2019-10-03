@@ -19,14 +19,13 @@ public interface SchemeGenerator {
 
         @Override
         public final int hashCode() {
-
             return Objects.hash(x1, y1, x2, y2);
         }
 
         @Override
         public final boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
             Line line = (Line) o;
             return x1 == line.x1 &&
                     y1 == line.y1 &&
