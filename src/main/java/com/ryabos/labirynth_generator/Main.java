@@ -2,6 +2,7 @@ package com.ryabos.labirynth_generator;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,11 +11,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -36,17 +44,43 @@ public class Main extends Application {
         Button refreshButton = new Button("Нарисовать лабиринт");
         refreshButton.setOnAction(event -> drawLabyrinth());
         drawLabyrinth();
+        final Button saveButton = new Button("Сохранить");
+        saveButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.jpg", "*.jpg"));
+            final File file = fileChooser.showSaveDialog(primaryStage);
+            saveImage(file);
+        });
         VBox root = new VBox(PADDING,
                 new HBox(PADDING,
                         refreshButton,
                         new Label("Ширина"), widthField,
                         new Label("Высота"), heightField,
-                        new Label("Шаг"), stepField),
+                        new Label("Шаг"), stepField,
+                        saveButton),
                 createScrollPane(canvas));
         root.setPadding(new Insets(4));
         final Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void saveImage(File file) {
+        file.mkdirs();
+        Image myJavaFXImage = canvas.snapshot(null, null);
+        try {
+            BufferedImage image = SwingFXUtils.fromFXImage(myJavaFXImage, null);
+            BufferedImage imageRGB = new BufferedImage(
+                    image.getWidth(),
+                    image.getHeight(),
+                    BufferedImage.OPAQUE);
+            Graphics2D graphics = imageRGB.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
+            ImageIO.write(imageRGB, "jpg", file);
+            graphics.dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void drawLabyrinth() {
